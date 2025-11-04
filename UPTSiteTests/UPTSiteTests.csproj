@@ -1,0 +1,31 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+
+  <IsPackable>true</IsPackable>
+  <IsTestProject>true</IsTestProject>
+  <PackageId>UPTSiteTests.Playwright</PackageId>
+  <Authors>Ankluna72</Authors>
+  <Description>Playwright UI regression tests for Universidad Privada de Tacna site.</Description>
+  <PackageProjectUrl>https://www.upt.edu.pe</PackageProjectUrl>
+  <RepositoryUrl>https://github.com/UPT-FAING-EPIS/lab-2025-ii-si784-u2-06-cs-Ankluna72</RepositoryUrl>
+  <PackageLicenseExpression>MIT</PackageLicenseExpression>
+  <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="coverlet.collector" Version="6.0.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.8.0" />
+    <PackageReference Include="Microsoft.Playwright.MSTest" Version="1.55.0" />
+    <PackageReference Include="MSTest.TestAdapter" Version="3.1.1" />
+    <PackageReference Include="MSTest.TestFramework" Version="3.1.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="Microsoft.VisualStudio.TestTools.UnitTesting" />
+  </ItemGroup>
+
+</Project>
