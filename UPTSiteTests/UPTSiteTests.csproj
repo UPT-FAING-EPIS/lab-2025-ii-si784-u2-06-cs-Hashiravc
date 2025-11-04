@@ -11,7 +11,7 @@
   <Authors>Ankluna72</Authors>
   <Description>Playwright UI regression tests for Universidad Privada de Tacna site.</Description>
   <PackageProjectUrl>https://www.upt.edu.pe</PackageProjectUrl>
-  <RepositoryUrl>https://github.com/UPT-FAING-EPIS/lab-2025-ii-si784-u2-06-cs-Ankluna72</RepositoryUrl>
+  <RepositoryUrl>https://github.com/UPT-FAING-EPIS/lab-2025-ii-si784-u2-06-cs-Hashiravc</RepositoryUrl>
   <PackageLicenseExpression>MIT</PackageLicenseExpression>
   <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
   </PropertyGroup>
