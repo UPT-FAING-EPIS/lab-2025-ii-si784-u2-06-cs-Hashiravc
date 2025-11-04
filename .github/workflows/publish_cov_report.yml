@@ -1,0 +1,98 @@
+name: Publish Coverage Report
+
+on:
+  push:
+    branches: ["main"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+
+      - name: Restore dependencies
+        working-directory: UPTSiteTests
+        run: dotnet restore
+
+      - name: Install Playwright browsers
+        shell: pwsh
+        working-directory: UPTSiteTests
+        run: |
+          dotnet build --configuration Release
+          pwsh ./bin/Release/net8.0/playwright.ps1 install --with-deps
+
+      - name: Run Playwright tests with coverage
+        working-directory: UPTSiteTests
+        run: |
+          dotnet test --configuration Release --results-directory TestResults --logger trx --collect:"XPlat Code Coverage"
+
+      - name: Install ReportGenerator
+        run: |
+          dotnet tool update --global dotnet-reportgenerator-globaltool || dotnet tool install --global dotnet-reportgenerator-globaltool
+
+      - name: Generate HTML coverage report
+        working-directory: UPTSiteTests
+        run: |
+          export PATH="$PATH:$HOME/.dotnet/tools"
+          reportgenerator "-reports:./TestResults/*/coverage.cobertura.xml" "-targetdir:./Cobertura" -reporttypes:HTML
+
+      - name: Prepare GitHub Pages artifact
+        working-directory: UPTSiteTests
+        run: |
+          mkdir -p site
+          cp -r Cobertura/* site/
+          mkdir -p site/videos site/playwright-traces
+          shopt -s globstar nullglob
+          for dir in bin/**/videos; do
+            if compgen -G "$dir/*" > /dev/null; then
+              cp -r "$dir"/* site/videos/
+            fi
+          done
+          for dir in bin/**/playwright-traces; do
+            if compgen -G "$dir/*" > /dev/null; then
+              cp -r "$dir"/* site/playwright-traces/
+            fi
+          done
+
+      - name: Upload Playwright artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-artifacts
+          path: |
+            UPTSiteTests/bin/**/playwright-traces
+            UPTSiteTests/bin/**/videos
+          if-no-files-found: ignore
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: UPTSiteTests/site
+
+  deploy:
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
